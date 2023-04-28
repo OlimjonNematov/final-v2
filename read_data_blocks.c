@@ -32,8 +32,9 @@ int read_data_blocks(const char *device, const ext3_inode *inode, data_blocks *f
     }
 
     // Read direct blocks
-    for (int i = 1; i < 12 && inode->i_block[i] != 0; i++)
+    for (int i = 0; i <= 12 && inode->i_block[i] != 0; i++)
     {
+
         off_t block_offset = (off_t)inode->i_block[i] * block_size;
         if (lseek(fd, block_offset, SEEK_SET) == -1)
         {
@@ -47,12 +48,16 @@ int read_data_blocks(const char *device, const ext3_inode *inode, data_blocks *f
         ssize_t bytes_read = read(fd, file_data->data + i * block_size, block_size);
         printf("Iteration: %d, Bytes read: %zd\n", i, bytes_read);
         printf("Data in this iteration:\n");
-        for (int j = 1; j < bytes_read; j++)
+        if (i == 1 || i == 12)
         {
-            printf("%02x ", (unsigned char)file_data->data[i * block_size + j]);
-            if ((j + 1) % 16 == 0)
+            for (int j = 1; j < bytes_read; j++)
             {
-                printf("\n");
+
+                printf("%02x ", (unsigned char)file_data->data[i * block_size + j]);
+                if ((j + 1) % 16 == 0)
+                {
+                    printf("\n");
+                }
             }
         }
         printf("\n");
@@ -64,27 +69,12 @@ int read_data_blocks(const char *device, const ext3_inode *inode, data_blocks *f
             free(file_data->data);
             return -1;
         }
-
-        // Print the contents of the first block
-        if (i == 0)
-        {
-            printf("Contents of the first block:\n");
-            for (int j = 0; j < block_size; j++)
-            {
-                printf("%02x ", (unsigned char)file_data->data[j]);
-                if ((j + 1) % 16 == 0)
-                {
-                    printf("\n");
-                }
-            }
-            printf("\n");
-        }
     }
 
     // Read singly indirect blocks
-    if (inode->i_block[12] != 0)
+    if (inode->i_block[13] != 0)
     {
-        if (read_singly_indirect_blocks(fd, inode->i_block[12], file_data->data, block_size, inode->i_block[1]) == -1)
+        if (read_singly_indirect_blocks(fd, inode->i_block[13], block_size, file_data->data, file_data->size))
         {
             printf("err");
         }

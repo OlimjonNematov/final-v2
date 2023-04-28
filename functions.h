@@ -100,8 +100,11 @@ int find_inode_location(const char *device, int inode_number, const ext3_superbl
 int read_inode(const char *device, int inode_block, int inode_offset, ext3_inode *inode);
 int read_data_blocks(const char *device, const ext3_inode *inode, data_blocks *file_data, const ext3_superblock *sb);
 
-// int reconstruct_file(/*data_blocks_structure*/, const char *output_file);
-int read_singly_indirect_blocks(int fd, uint32_t indirect_block_num, uint8_t *buffer, int block_size, int start_block);
+int read_data_block(int fd, uint32_t block_address, uint8_t *buffer, int block_size);
+int create_file_from_data(const char *file_name, const data_blocks *file_data);
+
+int read_singly_indirect_blocks(int fd, uint32_t indirect_block_num, int block_size, uint8_t *file_data, uint32_t file_size);
 int read_doubly_indirect_blocks(int fd, uint32_t doubly_indirect_block_num, uint8_t *buffer, int block_size);
 int read_triply_indirect_blocks(int fd, uint32_t triply_indirect_block_num, uint8_t *buffer, int block_size);
+
 #endif
