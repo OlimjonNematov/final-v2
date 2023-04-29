@@ -7,8 +7,9 @@
 #include "functions.h"
 
 // Add two new arguments to the function definition
-int read_singly_indirect_blocks(int fd, uint32_t indirect_block_num, int block_size, uint8_t *file_data, uint32_t file_size)
+int read_singly_indirect_blocks(int fd, uint32_t indirect_block_num, int block_size, uint8_t *file_data, uint32_t file_size, int direct_blocks_count)
 {
+
     if (fd < 0)
     {
         fprintf(stderr, "Invalid file descriptor.\n");
@@ -47,7 +48,7 @@ int read_singly_indirect_blocks(int fd, uint32_t indirect_block_num, int block_s
     // Iterate through each address in the indirect buffer
     for (int i = 0; i < block_size / sizeof(uint32_t); i++)
     {
-        printf("Address at index %d: %08x\n", i, indirect_buffer[i]);
+        // printf("Address at index %d: %08x\n", i, indirect_buffer[i]);
         if (indirect_buffer[i] == 0)
         {
             break; // Stop iterating when a zero pointer is encountered
@@ -61,13 +62,29 @@ int read_singly_indirect_blocks(int fd, uint32_t indirect_block_num, int block_s
         }
 
         int result = read_data_block(fd, indirect_buffer[i], data_block_buffer, block_size);
+        if (i == 1)
+        {
+            /* code */
+            // printf("Data block at address %08x contents:\n", indirect_buffer[i]);
+        }
+
+        for (int j = 0; j < block_size / 10; j++)
+        {
+            // printf("%02x ", (unsigned char)(data_block_buffer[j]));
+            if ((j + 1) % 16 == 0)
+            {
+                // printf("\n");
+            }
+        }
+        // printf("\n");
+
         if (result == -1)
         {
             printf("Error reading data block at address %08x\n", indirect_buffer[i]);
         }
 
         // Update the file_data with the content of the data block
-        uint32_t data_offset = (uint32_t)i * block_size;
+        uint32_t data_offset = (uint32_t)(direct_blocks_count + i) * block_size;
 
         if (data_offset < file_size)
         {

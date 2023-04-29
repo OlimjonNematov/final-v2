@@ -32,10 +32,10 @@ int read_data_blocks(const char *device, const ext3_inode *inode, data_blocks *f
     }
 
     // Read direct blocks
-    for (int i = 0; i <= 12 && inode->i_block[i] != 0; i++)
+    for (int i = 0; i < 12 && inode->i_block[i + 1] != 0; i++)
     {
 
-        off_t block_offset = (off_t)inode->i_block[i] * block_size;
+        off_t block_offset = (off_t)inode->i_block[i + 1] * block_size;
         if (lseek(fd, block_offset, SEEK_SET) == -1)
         {
             fprintf(stderr, "Error seeking to data block: block number: %u, block_offset: %lld\n", inode->i_block[i], (long long)block_offset);
@@ -46,37 +46,30 @@ int read_data_blocks(const char *device, const ext3_inode *inode, data_blocks *f
         }
 
         ssize_t bytes_read = read(fd, file_data->data + i * block_size, block_size);
-        printf("Iteration: %d, Bytes read: %zd\n", i, bytes_read);
-        printf("Data in this iteration:\n");
-        if (i == 1 || i == 12)
-        {
-            for (int j = 1; j < bytes_read; j++)
-            {
-
-                printf("%02x ", (unsigned char)file_data->data[i * block_size + j]);
-                if ((j + 1) % 16 == 0)
-                {
-                    printf("\n");
-                }
-            }
-        }
-        printf("\n");
-
-        if (bytes_read != block_size)
-        {
-            perror("Error reading data block");
-            close(fd);
-            free(file_data->data);
-            return -1;
-        }
     }
 
-    // Read singly indirect blocks
-    if (inode->i_block[13] != 0)
+    int direct_blocks_read = 0;
+    for (int i = 0; i < 12 && inode->i_block[i] != 0; i++)
     {
-        if (read_singly_indirect_blocks(fd, inode->i_block[13], block_size, file_data->data, file_data->size))
+        direct_blocks_read++;
+    }
+
+    if (inode->i_block[12] != 0)
+    {
+        printf("reading indirects \n");
+        if (read_singly_indirect_blocks(fd, inode->i_block[13], block_size, file_data->data, file_data->size, direct_blocks_read))
         {
             printf("err");
         }
     }
+
+    // Print first few bytes of file data
+    printf("First few bytes of file data:\n");
+    for (int i = 0; i < 64 && i < file_data->size; i++)
+    {
+        printf("%02x ", file_data->data[i]);
+    }
+    printf("\n");
+
+    close(fd);
 }

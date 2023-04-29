@@ -54,15 +54,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // Print file size and first few bytes of file data
-    printf("File size: %zu bytes\n", file_data.size);
-    printf("First few bytes of file data:\n");
-    for (size_t i = 0; i < 64 && i < file_data.size; i++)
-    {
-        printf("%02x ", file_data.data[i]);
-    }
-    printf("\n");
-
     // Reconstruct the file
     const char *output_file_name = "reconstructed_file.flv";
     if (create_file_from_data(output_file_name, &file_data) == -1)
@@ -71,25 +62,6 @@ int main(int argc, char *argv[])
         return 1;
     }
     printf("File successfully reconstructed as %s\n", output_file_name);
-    // Compare the original file with the reconstructed file
-    // const char *original_file_name = "path/to/original/file.flv";
-    // char compare_command[256];
-    // snprintf(compare_command, sizeof(compare_command), "diff %s %s", original_file_name, output_file_name);
-    // int compare_result = system(compare_command);
-    // if (compare_result == 0)
-    // {
-    //     printf("The original file and the reconstructed file are identical.\n");
-    // }
-    // else
-    // {
-    //     printf("The original file and the reconstructed file have differences.\n");
-    // }
-
-    // Free the file data memory
-    free(file_data.data);
-
-    // Reconstruct the file
-    // ...
 
     return 0;
 }

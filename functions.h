@@ -103,7 +103,7 @@ int read_data_blocks(const char *device, const ext3_inode *inode, data_blocks *f
 int read_data_block(int fd, uint32_t block_address, uint8_t *buffer, int block_size);
 int create_file_from_data(const char *file_name, const data_blocks *file_data);
 
-int read_singly_indirect_blocks(int fd, uint32_t indirect_block_num, int block_size, uint8_t *file_data, uint32_t file_size);
+int read_singly_indirect_blocks(int fd, uint32_t indirect_block_num, int block_size, uint8_t *file_data, uint32_t file_size, int direct_blocks_count);
 int read_doubly_indirect_blocks(int fd, uint32_t doubly_indirect_block_num, uint8_t *buffer, int block_size);
 int read_triply_indirect_blocks(int fd, uint32_t triply_indirect_block_num, uint8_t *buffer, int block_size);
 

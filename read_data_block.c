@@ -39,17 +39,17 @@ int read_data_block(int fd, uint32_t block_address, uint8_t *buffer, int block_s
     }
 
     // Print the contents of the data block
-    printf("Contents of data block %u:\n", block_address);
-    for (int i = 1020; i < block_size; i++)
+    // printf("Contents of data block %u:\n", block_address);
+    for (int i = 0; i < block_size; i++)
     {
-        printf("%02x ", buffer[i]);
+        // printf("%02x ", buffer[i]);
 
         if ((i + 1) % 16 == 0)
         {
-            printf("\n");
+            // printf("\n");
         }
     }
-    printf("\n");
+    // printf("\n");
 
     return 0;
 }
